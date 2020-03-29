@@ -22,16 +22,16 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Prices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices()
+        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(string fueltype)
         {
-            return await _context.Prices.ToListAsync();
+            return await _context.Prices.Where(p => p.FuelType == fueltype).ToListAsync();
         }
 
         // GET: api/Prices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Prices>> GetPrices(int id)
+        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype)
         {
-            var prices = await _context.Prices.FindAsync(id);
+            var prices = await _context.Prices.Where(p => p.SiteId == id && p.FuelType == fueltype).ToListAsync();
 
             if (prices == null)
             {

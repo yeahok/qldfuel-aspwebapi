@@ -22,14 +22,14 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Sites
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sites>>> GetSites()
+        public async Task<ActionResult<IEnumerable<Sites>>> GetSites(int count = 10)
         {
-            return await _context.Sites.ToListAsync();
+            return await _context.Sites.Take(count).ToListAsync();
         }
 
         // GET: api/Sites/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sites>> GetSites(int id)
+        public async Task<ActionResult<Sites>> GetSite(int id)
         {
             var sites = await _context.Sites.FindAsync(id);
 
