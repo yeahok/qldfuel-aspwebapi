@@ -52,7 +52,7 @@ namespace qldfuelanalyseapi.Controllers
             SitesObj sitesobj = new SitesObj();
             sitesobj.Sites.Add(site);
 
-            var fuelTypes = _context.Prices.Select(e => e.FuelType).Distinct();
+            var fuelTypes = _context.Prices.Where(p => p.SiteId == id).Select(e => e.FuelType).Distinct();
 
             sitesobj.QueryInfo.FuelTypes = fuelTypes.ToList();
 
