@@ -38,5 +38,6 @@ namespace qldfuelanalyseapi.Models
     public partial class QueryInfo
     {
         public int RowCount { get; set; }
+        public List<string> FuelTypes { get; set; }
     }
 }
