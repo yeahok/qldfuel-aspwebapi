@@ -22,26 +22,37 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Sites
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Sites>>> GetSites(int limit = 10, int page = 1)
+        public async Task<ActionResult<SitesObj>> GetSites(int limit = 10, int page = 1)
         {            
-            return await _context.Sites
+            var sites =  await _context.Sites
                 .Skip(limit * (page - 1))
                 .Take(limit)
                 .ToListAsync();
+            SitesObj sitesobj = new SitesObj();
+            sitesobj.Sites = sites;
+
+            int sitesCount = await _context.Sites.CountAsync();
+
+            sitesobj.QueryInfo.RowCount = sitesCount;
+
+            return sitesobj;
         }
 
         // GET: api/Sites/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Sites>> GetSite(int id)
+        public async Task<ActionResult<SitesObj>> GetSite(int id)
         {
-            var sites = await _context.Sites.FindAsync(id);
+            var site = await _context.Sites.FindAsync(id);
 
-            if (sites == null)
+            if (site == null)
             {
                 return NotFound();
             }
 
-            return sites;
+            SitesObj sitesobj = new SitesObj();
+            sitesobj.Sites.Add(site);
+
+            return sitesobj;
         }
 
         private bool SitesExists(int id)

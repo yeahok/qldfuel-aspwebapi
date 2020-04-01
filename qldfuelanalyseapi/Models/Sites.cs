@@ -22,4 +22,21 @@ namespace qldfuelanalyseapi.Models
 
         public virtual ICollection<Prices> Prices { get; set; }
     }
+
+    public partial class SitesObj
+    {
+        public SitesObj() {
+            Sites = new List<Sites>();
+            QueryInfo = new QueryInfo();
+        }
+
+        public List<Sites> Sites { get; set; }
+
+        public QueryInfo QueryInfo { get; set; }
+    }
+
+    public partial class QueryInfo
+    {
+        public int RowCount { get; set; }
+    }
 }
