@@ -27,6 +27,20 @@ namespace qldfuelanalyseapi.Controllers
             return await _context.Prices.Where(p => p.FuelType == fueltype).ToListAsync();
         }
 
+        [HttpGet("Latest/{id}")]
+        public async Task<ActionResult<List<Prices>>> GetLatestPrices(int id)
+        {
+            var prices = new List<Prices>();
+            var fuelTypes = await _context.Prices.Where(p => p.SiteId == id).Select(e => e.FuelType).Distinct().ToListAsync();
+            foreach (string fuelt in fuelTypes)
+            {
+                var price = await _context.Prices.Where(p => p.SiteId == id && p.FuelType == fuelt)
+                    .OrderByDescending(s => s.TransactionDateutc).Take(1).SingleAsync();
+                prices.Add(price);
+            }
+            return prices;
+        }
+
         // GET: api/Prices/5
         [HttpGet("{id}")]
         public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype)
