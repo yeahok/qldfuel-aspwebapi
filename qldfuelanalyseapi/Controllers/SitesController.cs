@@ -22,10 +22,13 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Sites
         [HttpGet]
-        public async Task<ActionResult<SitesObj>> GetSites(int limit = 10, int page = 1, string search = "")
-        {            
-            var sites =  await _context.Sites
+        public async Task<ActionResult<SitesObj>> GetSites(int limit = 10, int page = 1, string search = "", int sortby = 0)
+        {
+            var column = (ColumnSort)sortby;
+
+            var sites = await _context.Sites
                 .Where(s => s.SiteName.ToLower().Contains(search.ToLower()))
+                .OrderBy(c => EF.Property<Sites>(c, column.ToString()))
                 .Skip(limit * (page - 1))
                 .Take(limit)
                 .ToListAsync();

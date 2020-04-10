@@ -23,6 +23,12 @@ namespace qldfuelanalyseapi.Models
         public virtual ICollection<Prices> Prices { get; set; }
     }
 
+    public enum ColumnSort
+    {
+        SiteId,
+        SiteName
+    }
+
     public partial class SitesObj
     {
         public SitesObj() {
