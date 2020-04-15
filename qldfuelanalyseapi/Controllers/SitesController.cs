@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Internal;
 using qldfuelanalyseapi.Models;
 
 namespace qldfuelanalyseapi.Controllers
@@ -61,6 +62,28 @@ namespace qldfuelanalyseapi.Controllers
             sitesobj.QueryInfo.FuelTypes = fuelTypes.ToList();
 
             return sitesobj;
+        }
+
+        [HttpGet("MapData")]
+        public async Task<ActionResult<List<Sites>>> GetMapData(string fueltype)
+        {
+            var sites = await _context.Sites
+                .Where(c => c.Prices.Any(p => p.FuelType == fueltype))
+                .Select(e => new Sites{
+                    SiteId = e.SiteId,
+                    SiteName = e.SiteName,
+                    SiteBrand = e.SiteBrand,
+                    SitesAddressLine1 = e.SitesAddressLine1,
+                    SiteState = e.SiteState,
+                    SitePostCode = e.SitePostCode,
+                    SiteLatitude = e.SiteLatitude,
+                    SiteLongitude = e.SiteLongitude,
+                    Prices = e.Prices.Where(p => p.FuelType== fueltype)
+                                    .OrderByDescending(o => o.TransactionDateutc)
+                })
+                .ToListAsync();
+
+            return sites;
         }
 
         private bool SitesExists(int id)

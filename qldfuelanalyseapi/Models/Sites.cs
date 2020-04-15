@@ -20,7 +20,7 @@ namespace qldfuelanalyseapi.Models
         public decimal? SiteLatitude { get; set; }
         public decimal? SiteLongitude { get; set; }
 
-        public virtual ICollection<Prices> Prices { get; set; }
+        public virtual IEnumerable<Prices> Prices { get; set; }
     }
 
     public enum ColumnSort
