@@ -79,7 +79,7 @@ namespace qldfuelanalyseapi.Controllers
                     SiteLatitude = e.SiteLatitude,
                     SiteLongitude = e.SiteLongitude,
                     Prices = e.Prices.Where(p => p.FuelType== fueltype)
-                                    .OrderByDescending(o => o.TransactionDateutc)
+                                    .OrderByDescending(o => o.TransactionDateutc).Take(1)
                 })
                 .ToListAsync();
 
