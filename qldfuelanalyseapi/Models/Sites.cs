@@ -26,7 +26,9 @@ namespace qldfuelanalyseapi.Models
     public enum ColumnSort
     {
         SiteId,
-        SiteName
+        SiteName,
+        SiteBrand,
+        SiteSuburb
     }
 
     public partial class SitesObj
