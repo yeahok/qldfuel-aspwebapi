@@ -27,16 +27,21 @@ namespace qldfuelanalyseapi.Controllers
         {
             var column = (ColumnSort)sortby;
 
-            var sites = await _context.Sites
-                .Where(s => s.SiteName.ToLower().Contains(search.ToLower()))
-                .OrderBy(c => EF.Property<Sites>(c, column.ToString()))
+            var sites = _context.Sites.AsQueryable();
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                sites = sites.Where(s => s.SiteName.ToLower().Contains(search.ToLower()));
+            }
+            sites = sites.OrderBy(c => EF.Property<Sites>(c, column.ToString()));
+
+            SitesObj sitesobj = new SitesObj();
+            sitesobj.Sites = await sites
                 .Skip(limit * (page - 1))
                 .Take(limit)
                 .ToListAsync();
-            SitesObj sitesobj = new SitesObj();
-            sitesobj.Sites = sites;
 
-            int sitesCount = await _context.Sites.Where(s => s.SiteName.ToLower().Contains(search.ToLower())).CountAsync();
+            int sitesCount = await sites.CountAsync();
 
             sitesobj.QueryInfo.RowCount = sitesCount;
 
