@@ -23,7 +23,7 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Sites
         [HttpGet]
-        public async Task<ActionResult<SitesObj>> GetSites(int limit = 10, int page = 1, string search = "", int sortby = 0)
+        public async Task<ActionResult<SitesObj>> GetSites(string search, string brand, int limit = 10, int page = 1, int sortby = 0)
         {
             var column = (ColumnSort)sortby;
 
@@ -32,6 +32,10 @@ namespace qldfuelanalyseapi.Controllers
             if (!string.IsNullOrEmpty(search))
             {
                 sites = sites.Where(s => s.SiteName.ToLower().Contains(search.ToLower()));
+            }
+            if (!string.IsNullOrEmpty(brand))
+            {
+                sites = sites.Where(s => s.SiteBrand == brand);
             }
             sites = sites.OrderBy(c => EF.Property<Sites>(c, column.ToString()));
 
