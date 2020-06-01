@@ -24,7 +24,17 @@ namespace qldfuelanalyseapi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(string fueltype)
         {
-            return await _context.Prices.Where(p => p.FuelType == fueltype).ToListAsync();
+            var latestPriceDate = _context.Prices.Select(p => p.TransactionDateutc)
+                .OrderByDescending(p => p.Date)
+                .First();
+
+            //get last 14 days of prices
+            var prices = await _context.Prices
+                .Where(p => p.FuelType == fueltype)
+                .Where(p => p.TransactionDateutc < latestPriceDate)
+                .Where(p => p.TransactionDateutc > latestPriceDate.AddDays(-14))
+                .ToListAsync();
+            return prices;
         }
 
         [HttpGet("Latest/{id}")]
