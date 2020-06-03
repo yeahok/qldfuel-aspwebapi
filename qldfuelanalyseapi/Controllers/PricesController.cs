@@ -31,6 +31,14 @@ namespace qldfuelanalyseapi.Controllers
             {
                 fromDate = DateTime.ParseExact(from, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
                 toDate = DateTime.ParseExact(to, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                //limit of 31 days max
+                TimeSpan limit = new TimeSpan(31, 0, 0, 0);
+                TimeSpan requestedSpan = toDate - fromDate;
+                if (requestedSpan > limit)
+                {
+                    return BadRequest();
+                }
             }
             else
             {
