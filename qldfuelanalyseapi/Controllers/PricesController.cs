@@ -35,7 +35,7 @@ namespace qldfuelanalyseapi.Controllers
                 //limit of 31 days max
                 TimeSpan limit = new TimeSpan(31, 0, 0, 0);
                 TimeSpan requestedSpan = toDate - fromDate;
-                if (requestedSpan > limit)
+                if (requestedSpan > limit || fromDate > toDate)
                 {
                     return BadRequest();
                 }
