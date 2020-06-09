@@ -74,9 +74,37 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Prices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype)
+        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype, string from, string to)
         {
-            var prices = await _context.Prices.Where(p => p.SiteId == id && p.FuelType == fueltype).ToListAsync();
+            DateTime fromDate;
+            DateTime toDate;
+
+            if (!string.IsNullOrEmpty(from) && !string.IsNullOrEmpty(to))
+            {
+                fromDate = DateTime.ParseExact(from, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+                toDate = DateTime.ParseExact(to, "yyyyMMdd", System.Globalization.CultureInfo.InvariantCulture);
+
+                if (fromDate > toDate)
+                {
+                    return BadRequest();
+                }
+            }
+            else
+            {
+                //get latest price available in the database
+                toDate = _context.Prices.Select(p => p.TransactionDateutc)
+                    .OrderByDescending(p => p.Date)
+                    .First();
+                fromDate = toDate.AddDays(-31);
+            }
+
+            //get last 14 days of prices
+            var prices = await _context.Prices
+                .Where(p => p.SiteId == id)
+                .Where(p => p.FuelType == fueltype)
+                .Where(p => p.TransactionDateutc < toDate)
+                .Where(p => p.TransactionDateutc > fromDate)
+                .ToListAsync();
 
             if (prices == null)
             {
