@@ -22,7 +22,7 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Prices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(string fueltype, string from, string to)
+        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(string fueltype, string from, string to, int daterange = 14)
         {
             DateTime fromDate;
             DateTime toDate;
@@ -46,7 +46,7 @@ namespace qldfuelanalyseapi.Controllers
                 toDate = _context.Prices.Select(p => p.TransactionDateutc)
                     .OrderByDescending(p => p.Date)
                     .First();
-                fromDate = toDate.AddDays(-14);
+                fromDate = toDate.AddDays(-daterange);
             }
 
             //get last 14 days of prices
@@ -74,7 +74,7 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Prices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype, string from, string to)
+        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype, string from, string to, int daterange = 31)
         {
             DateTime fromDate;
             DateTime toDate;
@@ -95,7 +95,7 @@ namespace qldfuelanalyseapi.Controllers
                 toDate = _context.Prices.Select(p => p.TransactionDateutc)
                     .OrderByDescending(p => p.Date)
                     .First();
-                fromDate = toDate.AddDays(-31);
+                fromDate = toDate.AddDays(-daterange);
             }
 
             //get last 14 days of prices
