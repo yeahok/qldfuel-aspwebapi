@@ -113,10 +113,5 @@ namespace qldfuelanalyseapi.Controllers
 
             return prices;
         }
-
-        private bool PricesExists(int id)
-        {
-            return _context.Prices.Any(e => e.TransactionId == id);
-        }
     }
 }

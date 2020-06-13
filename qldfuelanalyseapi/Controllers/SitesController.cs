@@ -101,10 +101,5 @@ namespace qldfuelanalyseapi.Controllers
             var brands = await _context.Sites.Select(s => s.SiteBrand).Distinct().ToListAsync();
             return brands.OrderBy(b => b).ToList();
         }
-
-        private bool SitesExists(int id)
-        {
-            return _context.Sites.Any(e => e.SiteId == id);
-        }
     }
 }
