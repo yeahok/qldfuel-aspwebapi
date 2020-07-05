@@ -22,8 +22,8 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Prices
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(string fueltype, string from, string to, int daterange = 14)
-        {
+        public async Task<ActionResult<IEnumerable<PriceView>>> GetPrice(string fueltype, string from, string to, int daterange = 14)
+        { 
             DateTime fromDate;
             DateTime toDate;
 
@@ -43,38 +43,56 @@ namespace qldfuelanalyseapi.Controllers
             else
             {
                 //get latest price available in the database
-                toDate = _context.Prices.Select(p => p.TransactionDateutc)
-                    .OrderByDescending(p => p.Date)
+                toDate = _context.Price.Select(p => p.TransactionDate)
+                    .OrderByDescending(q => q.Date)
                     .First();
                 fromDate = toDate.AddDays(-daterange);
             }
 
             //get last 14 days of prices
-            var prices = await _context.Prices
-                .Where(p => p.FuelType == fueltype)
-                .Where(p => p.TransactionDateutc < toDate)
-                .Where(p => p.TransactionDateutc > fromDate)
+            var prices = await _context.Price
+                .Select(p => new PriceView
+                {
+                    Id = p.Id,
+                    SiteId = p.SiteId,
+                    FuelName = p.Fuel.Name,
+                    Amount = p.Amount,
+                    TransactionDate = p.TransactionDate
+                })
+                .Where(p => p.FuelName == fueltype)
+                .Where(p => p.TransactionDate < toDate)
+                .Where(p => p.TransactionDate > fromDate)
                 .ToListAsync();
+            
             return prices;
         }
 
         [HttpGet("Latest/{id}")]
-        public async Task<ActionResult<List<Prices>>> GetLatestPrices(int id)
+        public async Task<ActionResult<List<PriceView>>> GetLatestPrices(int id)
         {
-            var prices = new List<Prices>();
-            var fuelTypes = await _context.Prices.Where(p => p.SiteId == id).Select(e => e.FuelType).Distinct().ToListAsync();
-            foreach (string fuelt in fuelTypes)
+            var prices = new List<PriceView>();
+            var fuelTypes = await _context.Price.Where(p => p.SiteId == id).Select(e => e.Fuel).Distinct().ToListAsync();
+            foreach (Fuel fuel in fuelTypes)
             {
-                var price = await _context.Prices.Where(p => p.SiteId == id && p.FuelType == fuelt)
-                    .OrderByDescending(s => s.TransactionDateutc).Take(1).SingleAsync();
-                prices.Add(price);
+                var priceView = await _context.Price
+                    .Select(p => new PriceView
+                    {
+                        Id = p.Id,
+                        SiteId = p.SiteId,
+                        FuelName = p.Fuel.Name,
+                        Amount = p.Amount,
+                        TransactionDate = p.TransactionDate
+                    })
+                    .Where(p => p.SiteId == id && p.FuelName == fuel.Name)
+                    .OrderByDescending(s => s.TransactionDate).Take(1).SingleAsync();
+                prices.Add(priceView);
             }
             return prices;
         }
 
         // GET: api/Prices/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Prices>>> GetPrices(int id, string fueltype, string from, string to, int daterange = 31)
+        public async Task<ActionResult<IEnumerable<PriceView>>> GetPrice(int id, string fueltype, string from, string to, int daterange = 31)
         {
             DateTime fromDate;
             DateTime toDate;
@@ -92,18 +110,26 @@ namespace qldfuelanalyseapi.Controllers
             else
             {
                 //get latest price available in the database
-                toDate = _context.Prices.Select(p => p.TransactionDateutc)
+                toDate = _context.Price.Select(p => p.TransactionDate)
                     .OrderByDescending(p => p.Date)
                     .First();
                 fromDate = toDate.AddDays(-daterange);
             }
 
             //get last 14 days of prices
-            var prices = await _context.Prices
+            var prices = await _context.Price
+                .Select(p => new PriceView
+                {
+                    Id = p.Id,
+                    SiteId = p.SiteId,
+                    FuelName = p.Fuel.Name,
+                    Amount = p.Amount,
+                    TransactionDate = p.TransactionDate
+                })
                 .Where(p => p.SiteId == id)
-                .Where(p => p.FuelType == fueltype)
-                .Where(p => p.TransactionDateutc < toDate)
-                .Where(p => p.TransactionDateutc > fromDate)
+                .Where(p => p.FuelName == fueltype)
+                .Where(p => p.TransactionDate < toDate)
+                .Where(p => p.TransactionDate > fromDate)
                 .ToListAsync();
 
             if (prices == null)
@@ -112,6 +138,71 @@ namespace qldfuelanalyseapi.Controllers
             }
 
             return prices;
+        }
+
+        // PUT: api/Prices/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutPrice(int id, Price price)
+        {
+            if (id != price.Id)
+            {
+                return BadRequest();
+            }
+
+            _context.Entry(price).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!PriceExists(id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return NoContent();
+        }
+
+        // POST: api/Prices
+        // To protect from overposting attacks, enable the specific properties you want to bind to, for
+        // more details, see https://go.microsoft.com/fwlink/?linkid=2123754.
+        [HttpPost]
+        public async Task<ActionResult<Price>> PostPrice(Price price)
+        {
+            _context.Price.Add(price);
+            await _context.SaveChangesAsync();
+
+            return CreatedAtAction("GetPrice", new { id = price.Id }, price);
+        }
+
+        // DELETE: api/Prices/5
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<Price>> DeletePrice(int id)
+        {
+            var price = await _context.Price.FindAsync(id);
+            if (price == null)
+            {
+                return NotFound();
+            }
+
+            _context.Price.Remove(price);
+            await _context.SaveChangesAsync();
+
+            return price;
+        }
+
+        private bool PriceExists(int id)
+        {
+            return _context.Price.Any(e => e.Id == id);
         }
     }
 }
