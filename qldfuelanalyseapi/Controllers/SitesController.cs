@@ -33,8 +33,8 @@ namespace qldfuelanalyseapi.Controllers
                 PostCode = s.PostCode,
                 Latitude = s.Latitude,
                 Longitude = s.Longitude,
-                RegionLevel1 = s.RegionLevel1.Name,
-                RegionLevel2 = s.RegionLevel2.Name,
+                RegionLevel1 = s.SiteRegion.Where(sr => sr.Region.GeographicalLevel == 1).Select(sr => sr.Region.Name).First(),
+                RegionLevel2 = s.SiteRegion.Where(sr => sr.Region.GeographicalLevel == 2).Select(sr => sr.Region.Name).First(),
                 ModifiedDate = s.ModifiedDate,
             });
 
@@ -74,8 +74,8 @@ namespace qldfuelanalyseapi.Controllers
                 PostCode = s.PostCode,
                 Latitude = s.Latitude,
                 Longitude = s.Longitude,
-                RegionLevel1 = s.RegionLevel1.Name,
-                RegionLevel2 = s.RegionLevel2.Name,
+                RegionLevel1 = s.SiteRegion.Where(sr => sr.Region.GeographicalLevel == 1).Select(sr => sr.Region.Name).First(),
+                RegionLevel2 = s.SiteRegion.Where(sr => sr.Region.GeographicalLevel == 2).Select(sr => sr.Region.Name).First(),
                 ModifiedDate = s.ModifiedDate,
             });
 

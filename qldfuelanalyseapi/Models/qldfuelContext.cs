@@ -20,6 +20,8 @@ namespace qldfuelanalyseapi.Models
         public virtual DbSet<Price> Price { get; set; }
         public virtual DbSet<Region> Region { get; set; }
         public virtual DbSet<Site> Site { get; set; }
+        public virtual DbSet<SiteFuel> SiteFuel { get; set; }
+        public virtual DbSet<SiteRegion> SiteRegion { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,6 +32,8 @@ namespace qldfuelanalyseapi.Models
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .ValueGeneratedNever();
+
+                entity.Property(e => e.Active).HasColumnName("active");
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
@@ -44,6 +48,8 @@ namespace qldfuelanalyseapi.Models
                     .HasColumnName("id")
                     .ValueGeneratedNever();
 
+                entity.Property(e => e.Active).HasColumnName("active");
+
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
                     .HasColumnType("character varying");
@@ -52,6 +58,10 @@ namespace qldfuelanalyseapi.Models
             modelBuilder.Entity<Price>(entity =>
             {
                 entity.ToTable("price");
+
+                entity.HasIndex(e => new { e.SiteId, e.FuelId, e.TransactionDate })
+                    .HasName("price_site_id_fuel_id_transaction_date_key")
+                    .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
@@ -65,16 +75,20 @@ namespace qldfuelanalyseapi.Models
 
                 entity.Property(e => e.SiteId).HasColumnName("site_id");
 
-                entity.Property(e => e.TransactionDate).HasColumnName("transaction_date");
+                entity.Property(e => e.TransactionDate)
+                    .HasColumnName("transaction_date")
+                    .HasColumnType("timestamp with time zone");
 
                 entity.HasOne(d => d.Fuel)
                     .WithMany(p => p.Price)
                     .HasForeignKey(d => d.FuelId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("price_fuel_id_fkey");
 
                 entity.HasOne(d => d.Site)
                     .WithMany(p => p.Price)
                     .HasForeignKey(d => d.SiteId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("price_site_id_fkey");
             });
 
@@ -82,11 +96,17 @@ namespace qldfuelanalyseapi.Models
             {
                 entity.ToTable("region");
 
+                entity.HasIndex(e => new { e.OriginalId, e.GeographicalLevel })
+                    .HasName("region_original_id_geographical_level_key")
+                    .IsUnique();
+
                 entity.Property(e => e.Id).HasColumnName("id");
 
                 entity.Property(e => e.Abbrevation)
                     .HasColumnName("abbrevation")
                     .HasColumnType("character varying");
+
+                entity.Property(e => e.Active).HasColumnName("active");
 
                 entity.Property(e => e.GeographicalLevel).HasColumnName("geographical_level");
 
@@ -101,6 +121,7 @@ namespace qldfuelanalyseapi.Models
                 entity.HasOne(d => d.RegionParent)
                     .WithMany(p => p.InverseRegionParent)
                     .HasForeignKey(d => d.RegionParentId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("region_region_parent_id_fkey");
             });
 
@@ -111,6 +132,8 @@ namespace qldfuelanalyseapi.Models
                 entity.Property(e => e.Id)
                     .HasColumnName("id")
                     .ValueGeneratedNever();
+
+                entity.Property(e => e.Active).HasColumnName("active");
 
                 entity.Property(e => e.Address)
                     .HasColumnName("address")
@@ -126,7 +149,9 @@ namespace qldfuelanalyseapi.Models
                     .HasColumnName("longitude")
                     .HasColumnType("numeric");
 
-                entity.Property(e => e.ModifiedDate).HasColumnName("modified_date");
+                entity.Property(e => e.ModifiedDate)
+                    .HasColumnName("modified_date")
+                    .HasColumnType("timestamp with time zone");
 
                 entity.Property(e => e.Name)
                     .HasColumnName("name")
@@ -136,45 +161,59 @@ namespace qldfuelanalyseapi.Models
                     .HasColumnName("post_code")
                     .HasColumnType("character varying");
 
-                entity.Property(e => e.RegionLevel1Id).HasColumnName("region_level_1_id");
-
-                entity.Property(e => e.RegionLevel2Id).HasColumnName("region_level_2_id");
-
-                entity.Property(e => e.RegionLevel3Id).HasColumnName("region_level_3_id");
-
-                entity.Property(e => e.RegionLevel4Id).HasColumnName("region_level_4_id");
-
-                entity.Property(e => e.RegionLevel5Id).HasColumnName("region_level_5_id");
-
                 entity.HasOne(d => d.Brand)
                     .WithMany(p => p.Site)
                     .HasForeignKey(d => d.BrandId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("site_brand_id_fkey");
+            });
 
-                entity.HasOne(d => d.RegionLevel1)
-                    .WithMany(p => p.SiteRegionLevel1)
-                    .HasForeignKey(d => d.RegionLevel1Id)
-                    .HasConstraintName("site_region_level_1_id_fkey");
+            modelBuilder.Entity<SiteFuel>(entity =>
+            {
+                entity.ToTable("site_fuel");
 
-                entity.HasOne(d => d.RegionLevel2)
-                    .WithMany(p => p.SiteRegionLevel2)
-                    .HasForeignKey(d => d.RegionLevel2Id)
-                    .HasConstraintName("site_region_level_2_id_fkey");
+                entity.HasIndex(e => new { e.SiteId, e.FuelId })
+                    .HasName("site_fuel_site_id_fuel_id_key")
+                    .IsUnique();
 
-                entity.HasOne(d => d.RegionLevel3)
-                    .WithMany(p => p.SiteRegionLevel3)
-                    .HasForeignKey(d => d.RegionLevel3Id)
-                    .HasConstraintName("site_region_level_3_id_fkey");
+                entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.HasOne(d => d.RegionLevel4)
-                    .WithMany(p => p.SiteRegionLevel4)
-                    .HasForeignKey(d => d.RegionLevel4Id)
-                    .HasConstraintName("site_region_level_4_id_fkey");
+                entity.Property(e => e.FuelId).HasColumnName("fuel_id");
 
-                entity.HasOne(d => d.RegionLevel5)
-                    .WithMany(p => p.SiteRegionLevel5)
-                    .HasForeignKey(d => d.RegionLevel5Id)
-                    .HasConstraintName("site_region_level_5_id_fkey");
+                entity.Property(e => e.SiteId).HasColumnName("site_id");
+
+                entity.HasOne(d => d.Site)
+                    .WithMany(p => p.SiteFuel)
+                    .HasForeignKey(d => d.SiteId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("site_fuel_site_id_fkey");
+            });
+
+            modelBuilder.Entity<SiteRegion>(entity =>
+            {
+                entity.ToTable("site_region");
+
+                entity.HasIndex(e => new { e.SiteId, e.RegionId })
+                    .HasName("site_region_site_id_region_id_key")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.RegionId).HasColumnName("region_id");
+
+                entity.Property(e => e.SiteId).HasColumnName("site_id");
+
+                entity.HasOne(d => d.Region)
+                    .WithMany(p => p.SiteRegion)
+                    .HasForeignKey(d => d.RegionId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("site_region_region_id_fkey");
+
+                entity.HasOne(d => d.Site)
+                    .WithMany(p => p.SiteRegion)
+                    .HasForeignKey(d => d.SiteId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("site_region_site_id_fkey");
             });
 
             OnModelCreatingPartial(modelBuilder);
