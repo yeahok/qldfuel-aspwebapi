@@ -8,6 +8,7 @@ namespace qldfuelanalyseapi.Models
         public int Id { get; set; }
         public int? SiteId { get; set; }
         public int? FuelId { get; set; }
+        public bool? Active { get; set; }
 
         public virtual Site Site { get; set; }
     }

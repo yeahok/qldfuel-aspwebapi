@@ -65,6 +65,8 @@ namespace qldfuelanalyseapi.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
+                entity.Property(e => e.Active).HasColumnName("active");
+
                 entity.Property(e => e.Amount).HasColumnName("amount");
 
                 entity.Property(e => e.CollectionMethod)
@@ -177,6 +179,8 @@ namespace qldfuelanalyseapi.Models
                     .IsUnique();
 
                 entity.Property(e => e.Id).HasColumnName("id");
+
+                entity.Property(e => e.Active).HasColumnName("active");
 
                 entity.Property(e => e.FuelId).HasColumnName("fuel_id");
 
