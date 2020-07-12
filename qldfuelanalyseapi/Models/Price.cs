@@ -11,6 +11,7 @@ namespace qldfuelanalyseapi.Models
         public string CollectionMethod { get; set; }
         public int? Amount { get; set; }
         public DateTime TransactionDate { get; set; }
+        public bool? Active { get; set; }
 
         public virtual Fuel Fuel { get; set; }
         public virtual Site Site { get; set; }
