@@ -11,39 +11,39 @@ namespace qldfuelanalyseapi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class FuelsController : ControllerBase
+    public class SiteFuelsController : ControllerBase
     {
         private readonly qldfuelContext _context;
 
-        public FuelsController(qldfuelContext context)
+        public SiteFuelsController(qldfuelContext context)
         {
             _context = context;
         }
 
-        // GET: api/Fuels
+        // GET: api/SiteFuels
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Fuel>>> GetFuel()
+        public async Task<ActionResult<IEnumerable<SiteFuel>>> GetSiteFuel()
         {
-            return await _context.Fuel.ToListAsync();
+            return await _context.SiteFuel.ToListAsync();
         }
 
-        // GET: api/Fuels/5
+        // GET: api/SiteFuels/5
         [HttpGet("{id}")]
-        public async Task<ActionResult<Fuel>> GetFuel(int id)
+        public async Task<ActionResult<SiteFuel>> GetSiteFuel(int id)
         {
-            var fuel = await _context.Fuel.FindAsync(id);
+            var siteFuel = await _context.SiteFuel.FindAsync(id);
 
-            if (fuel == null)
+            if (siteFuel == null)
             {
                 return NotFound();
             }
 
-            return fuel;
+            return siteFuel;
         }
 
-        private bool FuelExists(int id)
+        private bool SiteFuelExists(int id)
         {
-            return _context.Fuel.Any(e => e.Id == id);
+            return _context.SiteFuel.Any(e => e.Id == id);
         }
     }
 }

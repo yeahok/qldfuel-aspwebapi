@@ -8,29 +8,24 @@ namespace qldfuelanalyseapi.Models
         public Site()
         {
             Price = new HashSet<Price>();
+            SiteFuel = new HashSet<SiteFuel>();
+            SiteRegion = new HashSet<SiteRegion>();
         }
 
         public int Id { get; set; }
         public string Name { get; set; }
         public int? BrandId { get; set; }
         public string Address { get; set; }
-        public int? RegionLevel1Id { get; set; }
-        public int? RegionLevel2Id { get; set; }
-        public int? RegionLevel3Id { get; set; }
-        public int? RegionLevel4Id { get; set; }
-        public int? RegionLevel5Id { get; set; }
         public string PostCode { get; set; }
         public decimal? Latitude { get; set; }
         public decimal? Longitude { get; set; }
         public DateTime? ModifiedDate { get; set; }
+        public bool? Active { get; set; }
 
         public virtual Brand Brand { get; set; }
-        public virtual Region RegionLevel1 { get; set; }
-        public virtual Region RegionLevel2 { get; set; }
-        public virtual Region RegionLevel3 { get; set; }
-        public virtual Region RegionLevel4 { get; set; }
-        public virtual Region RegionLevel5 { get; set; }
         public virtual ICollection<Price> Price { get; set; }
+        public virtual ICollection<SiteFuel> SiteFuel { get; set; }
+        public virtual ICollection<SiteRegion> SiteRegion { get; set; }
     }
 
     public class SiteView
