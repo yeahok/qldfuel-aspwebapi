@@ -104,8 +104,8 @@ namespace qldfuelanalyseapi.Models
 
                 entity.Property(e => e.Id).HasColumnName("id");
 
-                entity.Property(e => e.Abbrevation)
-                    .HasColumnName("abbrevation")
+                entity.Property(e => e.Abbreviation)
+                    .HasColumnName("abbreviation")
                     .HasColumnType("character varying");
 
                 entity.Property(e => e.Active).HasColumnName("active");

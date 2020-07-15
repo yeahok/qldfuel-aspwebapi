@@ -15,7 +15,7 @@ namespace qldfuelanalyseapi.Models
         public string Name { get; set; }
         public int? OriginalId { get; set; }
         public int? GeographicalLevel { get; set; }
-        public string Abbrevation { get; set; }
+        public string Abbreviation { get; set; }
         public int? RegionParentId { get; set; }
         public bool? Active { get; set; }
 
