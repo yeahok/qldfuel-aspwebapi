@@ -16,4 +16,10 @@ namespace qldfuelanalyseapi.Models
 
         public virtual ICollection<Site> Site { get; set; }
     }
+
+    public class BrandView
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
 }
