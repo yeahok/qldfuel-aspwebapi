@@ -59,6 +59,7 @@ namespace qldfuelanalyseapi
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseCors("CorsPolicy");
             }
 
             app.UseIpRateLimiting();
@@ -66,8 +67,6 @@ namespace qldfuelanalyseapi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
-            app.UseCors("CorsPolicy");
 
             app.UseAuthorization();
 

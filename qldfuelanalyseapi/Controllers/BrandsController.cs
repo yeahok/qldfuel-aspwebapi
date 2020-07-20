@@ -22,9 +22,14 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Brands
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<String>>> GetBrand()
+        public async Task<ActionResult<IEnumerable<BrandView>>> GetBrand()
         {
-            var brands = await _context.Brand.Select(b => b.Name).ToListAsync();
+            var brands = await _context.Brand
+                .Select(b => new BrandView
+                {
+                    Id = b.Id,
+                    Name = b.Name
+                }).ToListAsync();
             
             return brands;
         }
