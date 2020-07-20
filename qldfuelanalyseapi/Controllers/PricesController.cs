@@ -42,10 +42,7 @@ namespace qldfuelanalyseapi.Controllers
             }
             else
             {
-                //get latest price available in the database
-                toDate = _context.Price.Select(p => p.TransactionDate)
-                    .OrderByDescending(q => q.Date)
-                    .First();
+                toDate = DateTime.Now;
                 fromDate = toDate.AddDays(-daterange);
             }
 
@@ -109,10 +106,7 @@ namespace qldfuelanalyseapi.Controllers
             }
             else
             {
-                //get latest price available in the database
-                toDate = _context.Price.Select(p => p.TransactionDate)
-                    .OrderByDescending(p => p.Date)
-                    .First();
+                toDate = DateTime.Now;
                 fromDate = toDate.AddDays(-daterange);
             }
 
