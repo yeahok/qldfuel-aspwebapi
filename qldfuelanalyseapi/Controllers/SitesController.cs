@@ -22,9 +22,21 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Sites
         [HttpGet]
-        public async Task<ActionResult<SitesObj>> GetSite(string search, string brand, int limit = 10, int page = 1, int sortby = 0)
+        public async Task<ActionResult<SitesObj>> GetSite(string search, int brand, int limit = 10, int page = 1, int sortby = 0)
         {
-            var siteView = _context.Site.Select(s => new SiteView
+            var sites = _context.Site.AsQueryable();
+
+            if (brand != 0)
+            {
+                sites = sites.Where(s => s.BrandId == brand);
+            }            
+
+            if (!string.IsNullOrEmpty(search))
+            {
+                sites = sites.Where(s => s.Name.ToLower().Contains(search.ToLower()));
+            }
+
+            var siteView = sites.Select(s => new SiteView
             {
                 Id = s.Id,
                 Name = s.Name,
@@ -37,16 +49,7 @@ namespace qldfuelanalyseapi.Controllers
                 RegionLevel2 = s.SiteRegion.Where(sr => sr.Region.GeographicalLevel == 2).Select(sr => sr.Region.Name).First(),
                 ModifiedDate = s.ModifiedDate,
             });
-
-            if (!string.IsNullOrEmpty(search))
-            {
-                siteView = siteView.Where(s => s.Name.ToLower().Contains(search.ToLower()));
-            }
-            if (!string.IsNullOrEmpty(brand))
-            {
-                siteView = siteView.Where(s => s.Brand == brand);
-            }
-            
+           
             var column = (ColumnSort)sortby;
             siteView = siteView.OrderBy(s => EF.Property<SiteView>(s, column.ToString()));
 
