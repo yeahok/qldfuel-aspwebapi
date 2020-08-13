@@ -25,6 +25,7 @@ namespace qldfuelanalyseapi.Controllers
         public async Task<ActionResult<IEnumerable<BrandView>>> GetBrand()
         {
             var brands = await _context.Brand
+                .Where(b => b.Active == true)
                 .Select(b => new BrandView
                 {
                     Id = b.Id,
