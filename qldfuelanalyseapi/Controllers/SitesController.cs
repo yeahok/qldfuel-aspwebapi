@@ -82,7 +82,18 @@ namespace qldfuelanalyseapi.Controllers
                 ModifiedDate = s.ModifiedDate,
             });
 
-            var site = await siteView.Where(s => s.Id == id).FirstAsync();
+            var siteCheck = siteView.Where(s => s.Id == id);
+
+            var site = new SiteView();
+
+            if (siteCheck.Count() == 0)
+            {
+                return NotFound();
+            }
+            else
+            {
+                site = await siteCheck.FirstAsync();
+            }            
 
             SitesObj sitesobj = new SitesObj();
             sitesobj.Sites.Add(site);
