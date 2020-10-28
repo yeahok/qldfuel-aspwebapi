@@ -49,8 +49,17 @@ namespace qldfuelanalyseapi.Controllers
                 RegionLevel2 = s.SiteRegion.Where(sr => sr.Region.GeographicalLevel == 2).Select(sr => sr.Region.Name).First(),
                 ModifiedDate = s.ModifiedDate,
             });
-           
-            var column = (ColumnSort)sortby;
+
+            ColumnSort column = new ColumnSort();
+
+            if (sortby < 0 || sortby > 3)
+            {
+                return BadRequest();
+            }
+            else
+            {
+                column = (ColumnSort)sortby;
+            }
             siteView = siteView.OrderBy(s => EF.Property<SiteView>(s, column.ToString()));
 
             SitesObj sitesObj = new SitesObj();
