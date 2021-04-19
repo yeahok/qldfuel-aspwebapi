@@ -22,7 +22,7 @@ namespace qldfuelanalyseapi.Controllers
 
         // GET: api/Sites
         [HttpGet]
-        public async Task<ActionResult<SitesObj>> GetSite(string search, int brand, int limit = 10, int page = 1, int sortby = 0)
+        public async Task<ActionResult<SitesObj>> GetSite(string search, string postcode, int brand, int limit = 10, int page = 1, int sortby = 0)
         {
             var sites = _context.Site.AsQueryable();
 
@@ -34,6 +34,11 @@ namespace qldfuelanalyseapi.Controllers
             if (!string.IsNullOrEmpty(search))
             {
                 sites = sites.Where(s => s.Name.ToLower().Contains(search.ToLower()));
+            }
+
+            if (!string.IsNullOrEmpty(postcode))
+            {
+                sites = sites.Where(s => s.PostCode.Contains(postcode));
             }
 
             var siteView = sites.Select(s => new SiteView
