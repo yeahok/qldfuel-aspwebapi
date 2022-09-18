@@ -36,6 +36,7 @@ namespace qldfuelanalyseapi
             services.AddOptions();
             services.AddMemoryCache();
             services.Configure<IpRateLimitOptions>(Configuration.GetSection("IpRateLimiting"));
+            services.AddSingleton<IProcessingStrategy, AsyncKeyLockProcessingStrategy>();
             Console.WriteLine(Configuration.GetSection("IpRateLimiting").ToString());
             services.Configure<IpRateLimitPolicies>(Configuration.GetSection("IpRateLimitPolicies"));
             services.AddSingleton<IIpPolicyStore, MemoryCacheIpPolicyStore>();
